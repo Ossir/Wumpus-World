@@ -1,0 +1,11 @@
+C:\Users\Пользователь\Documents\Visual Studio 2010\Projects\WumpusG\WumpusG\bin\Debug\WumpusG.exe
+C:\Users\Пользователь\Documents\Visual Studio 2010\Projects\WumpusG\WumpusG\bin\Debug\WumpusG.pdb
+C:\Users\Пользователь\Documents\Visual Studio 2010\Projects\WumpusG\WumpusG\obj\x86\Debug\ResolveAssemblyReference.cache
+C:\Users\Пользователь\Documents\Visual Studio 2010\Projects\WumpusG\WumpusG\obj\x86\Debug\MainWindow.baml
+C:\Users\Пользователь\Documents\Visual Studio 2010\Projects\WumpusG\WumpusG\obj\x86\Debug\MainWindow.g.cs
+C:\Users\Пользователь\Documents\Visual Studio 2010\Projects\WumpusG\WumpusG\obj\x86\Debug\App.g.cs
+C:\Users\Пользователь\Documents\Visual Studio 2010\Projects\WumpusG\WumpusG\obj\x86\Debug\WumpusG_MarkupCompile.cache
+C:\Users\Пользователь\Documents\Visual Studio 2010\Projects\WumpusG\WumpusG\obj\x86\Debug\WumpusG.g.resources
+C:\Users\Пользователь\Documents\Visual Studio 2010\Projects\WumpusG\WumpusG\obj\x86\Debug\WumpusG.Properties.Resources.resources
+C:\Users\Пользователь\Documents\Visual Studio 2010\Projects\WumpusG\WumpusG\obj\x86\Debug\WumpusG.exe
+C:\Users\Пользователь\Documents\Visual Studio 2010\Projects\WumpusG\WumpusG\obj\x86\Debug\WumpusG.pdb
