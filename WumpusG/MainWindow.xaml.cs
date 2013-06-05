@@ -67,16 +67,25 @@ namespace WumpusG
                 }
             }
             int pitRow, pitCol;
-            for (int pitNum = 0; pitNum < 4; pitNum++)
+            //for (int pitNum = 0; pitNum < 4; pitNum++)
+            //{
+            //    pitRow = r.Next(4);
+            //    pitCol = r.Next(4);
+            //    while (pitRow == 3 && pitCol == 0)
+            //    {
+            //        pitRow = r.Next(4);
+            //        pitCol = r.Next(4);
+            //    }
+            //    map[pitRow, pitCol] = 1;
+            //}
+            for (int row = 0; row < 4; row++)
             {
-                pitRow = r.Next(4);
-                pitCol = r.Next(4);
-                while (pitRow == 3 && pitCol == 0)
+                for (int col = 0; col < 4; col++)
                 {
-                    pitRow = r.Next(4);
-                    pitCol = r.Next(4);
+                    int n = new Random().Next(1, 100);
+                    if (n < 20 && row != 0 && col != 0)
+                        map[row, col] = 1;
                 }
-                map[pitRow, pitCol] = 1;
             }
             pitRow = r.Next(4);
             pitCol = r.Next(4);
@@ -120,6 +129,7 @@ namespace WumpusG
             {
                 richTextBox1.AppendText("You found the Gold! \n");
                 drawCell(newRow, newCol, "/WumpusG;component/resources/gold_trophy_trophy_prize_winner_gold_cup.png");
+                field[newRow, newCol] = 0;
                 return 3;
             }
             if ((newCol > 0 && mapL[newRow, newCol - 1] == 1) ||
@@ -154,23 +164,23 @@ namespace WumpusG
                 if (newCol > 0 && field[newRow, newCol - 1] != 4 && 
                     map[newRow, newCol - 1].Source.Equals("/WumpusG;component/resources/folder_ele_wind_weather.png"))
                     drawCell(newRow, newCol - 1, "/WumpusG;component/resources/bad_smelly_and_wind.png");
-                else
+                else if (newCol > 0 && field[newRow, newCol - 1] != 4)
                     drawCell(newRow, newCol - 1, "/WumpusG;component/resources/bad_smelly.png");
                 if (newCol < 3 && field[newRow, newCol + 1] != 4 &&
                     map[newRow, newCol + 1].Source.Equals("/WumpusG;component/resources/folder_ele_wind_weather.png"))
                     drawCell(newRow, newCol + 1, "/WumpusG;component/resources/bad_smelly_and_wind.png");
-                else
+                else if (newCol < 3 && field[newRow, newCol + 1] != 4)
                     drawCell(newRow, newCol + 1, "/WumpusG;component/resources/bad_smelly.png");
                 if (newRow > 0 && field[newRow - 1, newCol] != 4 &&
                     map[newRow - 1, newCol].Source.Equals("/WumpusG;component/resources/folder_ele_wind_weather.png"))
                     drawCell(newRow - 1, newCol, "/WumpusG;component/resources/bad_smelly_and_wind.png");
-                else
-                    drawCell(newRow, newCol + 1, "/WumpusG;component/resources/bad_smelly.png");
+                else if (newRow > 0 && field[newRow - 1, newCol] != 4)
+                    drawCell(newRow - 1, newCol, "/WumpusG;component/resources/bad_smelly.png");
                 if (newRow < 3 && field[newRow + 1, newCol] != 4 &&
                     map[newRow + 1, newCol].Source.Equals("/WumpusG;component/resources/folder_ele_wind_weather.png"))
                     drawCell(newRow + 1, newCol, "/WumpusG;component/resources/bad_smelly_and_wind.png");
-                else
-                    drawCell(newRow, newCol + 1, "/WumpusG;component/resources/bad_smelly.png");
+                else if (newRow < 3 && field[newRow + 1, newCol] != 4)
+                    drawCell(newRow + 1, newCol, "/WumpusG;component/resources/bad_smelly.png");
             }
             return 1;
         }
