@@ -74,6 +74,13 @@ namespace WumpusG.Properties {
             }
         }
         
+        internal static System.Drawing.Bitmap bad_smelly_and_wind {
+            get {
+                object obj = ResourceManager.GetObject("bad_smelly_and_wind", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap blackhole {
             get {
                 object obj = ResourceManager.GetObject("blackhole", resourceCulture);
@@ -98,6 +105,13 @@ namespace WumpusG.Properties {
         internal static System.Drawing.Bitmap folder_ele_wind_weather {
             get {
                 object obj = ResourceManager.GetObject("folder_ele_wind_weather", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap gold_trophy_trophy_prize_winner_gold_cup {
+            get {
+                object obj = ResourceManager.GetObject("gold_trophy_trophy_prize_winner_gold_cup", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
