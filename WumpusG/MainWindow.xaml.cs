@@ -26,6 +26,16 @@ namespace WumpusG
         public MainWindow()
         {
             InitializeComponent();
+            richTextBox1.Document.LineHeight = 0.1;
+        }
+
+        public void drawCell(int row, int col, string path)
+        {
+            BitmapImage logo = new BitmapImage();
+            logo.BeginInit();
+            logo.UriSource = new Uri(@path, UriKind.Relative);
+            logo.EndInit();
+            map[row, col].Source = logo;
         }
 
         public void drawMap(int[,] field, int plRow, int plCol)
@@ -90,17 +100,19 @@ namespace WumpusG
         {
             if (newRow < 0 || newRow > 3 || newCol < 0 || newCol > 3)
             {
-                textBlock1.Text += "You hit the wall\n";
+                richTextBox1.AppendText("You hit the wall\n");
                 return 0;
             }
             else if (map[newRow, newCol] == 1)
             {
-                textBlock1.Text += "You fall into a pit\n";
+                richTextBox1.AppendText("You fall into a pit\n");
+                drawCell(newRow, newCol, "/WumpusG;component/resources/blackhole.png");
                 return 2;
             }
             else if (map[newRow, newCol] == 2)
             {
-                textBlock1.Text += "You've eaten by the Wumpus\n";
+                richTextBox1.AppendText("You've eaten by the Wumpus\n");
+                drawCell(newRow, newCol, "/WumpusG;component/resources/monster_green.png");
                 return 2;
             }
             if ((newCol > 0 && map[newRow, newCol - 1] == 1) ||
@@ -108,14 +120,30 @@ namespace WumpusG
                 (newRow > 0 && map[newRow - 1, newCol] == 1) ||
                 (newRow < 3 && map[newRow + 1, newCol] == 1))
             {
-                textBlock1.Text += "You fell a breeze\n";
+                richTextBox1.AppendText("You fell a breeze\n");
+                if (newCol > 0 && field[newRow, newCol - 1] != 4)
+                    drawCell(newRow, newCol - 1, "/WumpusG;component/resources/folder_ele_wind_weather.png");
+                if (newCol < 3 && field[newRow, newCol + 1] != 4)
+                    drawCell(newRow, newCol + 1, "/WumpusG;component/resources/folder_ele_wind_weather.png");
+                if (newRow > 0 && field[newRow - 1, newCol] != 4)
+                    drawCell(newRow - 1, newCol, "/WumpusG;component/resources/folder_ele_wind_weather.png");
+                if (newRow < 3 && field[newRow + 1, newCol] != 4)
+                    drawCell(newRow + 1, newCol, "/WumpusG;component/resources/folder_ele_wind_weather.png");
             }
             if ((newCol > 0 && map[newRow, newCol - 1] == 2) ||
                (newCol < 3 && map[newRow, newCol + 1] == 2) ||
                (newRow > 0 && map[newRow - 1, newCol] == 2) ||
                (newRow < 3 && map[newRow + 1, newCol] == 2))
             {
-                textBlock1.Text += "You smell Wumpus\n";
+                richTextBox1.AppendText("You smell Wumpus\n");
+                if (newCol > 0 && field[newRow, newCol - 1] != 4)
+                    drawCell(newRow, newCol - 1, "/WumpusG;component/resources/bad_smelly.png");
+                if (newCol < 3 && field[newRow, newCol + 1] != 4)
+                    drawCell(newRow, newCol + 1, "/WumpusG;component/resources/bad_smelly.png");
+                if (newRow > 0 && field[newRow - 1, newCol] != 4)
+                    drawCell(newRow - 1, newCol, "/WumpusG;component/resources/bad_smelly.png");
+                if (newRow < 3 && field[newRow + 1, newCol] != 4)
+                    drawCell(newRow + 1, newCol, "/WumpusG;component/resources/bad_smelly.png");
             }
             return 1;
         }
@@ -154,14 +182,47 @@ namespace WumpusG
 
         private void button1_Click(object sender, RoutedEventArgs e)
         {
-            textBlock1.Text += "You step Up\n";
+            richTextBox1.AppendText("You step Up\n");
             int state = 0;
             state = checkMove(field, playerRow - 1, playerCol);
             if (state > 0)
             {
                 playerRow -= 1;
             }
-            drawMap(field, playerRow, playerCol);            
+            if(state !=2)
+                drawCell(playerRow, playerCol, "/WumpusG;component/resources/avatar_hero_superhero_loki_avengers.png");
+            field[playerRow + 1, playerCol] = 4;
+            drawCell(playerRow + 1, playerCol, "/WumpusG;component/resources/field.png"); 
+        }
+
+        private void button2_Click(object sender, RoutedEventArgs e)
+        {
+            richTextBox1.AppendText("You step Down\n");
+            int state = 0;
+            state = checkMove(field, playerRow + 1, playerCol);
+            if (state > 0)
+            {
+                playerRow += 1;
+            }
+            if (state != 2)
+                drawCell(playerRow, playerCol, "/WumpusG;component/resources/avatar_hero_superhero_loki_avengers.png");
+            field[playerRow - 1, playerCol] = 4;
+            drawCell(playerRow - 1, playerCol, "/WumpusG;component/resources/field.png"); 
+        }
+
+        private void button4_Click(object sender, RoutedEventArgs e)
+        {
+            richTextBox1.AppendText("You step Right\n");
+            int state = 0;
+            state = checkMove(field, playerRow, playerCol + 1);
+            if (state > 0)
+            {
+                playerCol += 1;
+            }
+            if (state != 2)
+                drawCell(playerRow, playerCol, "/WumpusG;component/resources/avatar_hero_superhero_loki_avengers.png");
+            field[playerRow, playerCol - 1] = 4;
+            drawCell(playerRow, playerCol - 1, "/WumpusG;component/resources/field.png"); 
         }
     }
 }

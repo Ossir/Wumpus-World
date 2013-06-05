@@ -67,9 +67,23 @@ namespace WumpusG.Properties {
             }
         }
         
+        internal static System.Drawing.Bitmap bad_smelly {
+            get {
+                object obj = ResourceManager.GetObject("bad_smelly", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap blackhole {
             get {
                 object obj = ResourceManager.GetObject("blackhole", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap field {
+            get {
+                object obj = ResourceManager.GetObject("field", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
