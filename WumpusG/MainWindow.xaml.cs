@@ -83,17 +83,6 @@ namespace WumpusG
                 }
             }
             int pitRow, pitCol;
-            //for (int pitNum = 0; pitNum < 4; pitNum++)
-            //{
-            //    pitRow = r.Next(4);
-            //    pitCol = r.Next(4);
-            //    while (pitRow == 3 && pitCol == 0)
-            //    {
-            //        pitRow = r.Next(4);
-            //        pitCol = r.Next(4);
-            //    }
-            //    map[pitRow, pitCol] = 1;
-            //}
             for (int row = 0; row < 4; row++)
             {
                 for (int col = 0; col < 4; col++)
