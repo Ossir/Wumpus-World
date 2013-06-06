@@ -19,14 +19,27 @@ namespace WumpusG
     /// </summary>
     public partial class MainWindow : Window
     {
+        public int direction = 1;
+
+        public struct cell
+        {
+            public bool isPit; 
+            public bool isGold;
+            public bool isWumpus;
+            public bool isSafe;
+            public bool isFog;
+        }
+
+        public int score = 100;
         public Image[,] map = new Image[4, 4];
-        public int[,] field = new int[4, 4];
+        public cell[,] field = new cell[4, 4];
         public int playerRow = 3, playerCol = 0;
 
         public MainWindow()
         {
             InitializeComponent();
             richTextBox1.Document.LineHeight = 0.1;
+            label2.Content = score;
         }
 
         public void drawCell(int row, int col, string path)
@@ -38,7 +51,7 @@ namespace WumpusG
             map[row, col].Source = logo;
         }
 
-        public void drawMap(int[,] field, int plRow, int plCol)
+        public void drawMap(cell[,] field, int plRow, int plCol)
         {
             for (int i = 0; i < 4; i++)
             {
@@ -51,19 +64,22 @@ namespace WumpusG
                         logo.UriSource = new Uri(@"/WumpusG;component/resources/avatar_hero_superhero_loki_avengers.png", UriKind.Relative);
                         logo.EndInit();
                         map[i, j].Source = logo;
+                        //RotateTransform angle = new RotateTransform(90);
+                        //map[i, j].RenderTransformOrigin=new Point(0.5,0.5);
+                        //map[i, j].RenderTransform = angle;
                     }
                 }
             }
         }
 
-        public void CreateMap(int[,] map)
+        public void CreateMap(cell[,] map)
         {
             Random r = new Random();
             for (int row = 0; row < 4; row++)
             {
                 for (int col = 0; col < 4; col++)
                 {
-                    map[row, col] = 0;
+                    map[row, col].isFog = true;
                 }
             }
             int pitRow, pitCol;
@@ -83,8 +99,8 @@ namespace WumpusG
                 for (int col = 0; col < 4; col++)
                 {
                     int n = new Random().Next(1, 100);
-                    if (n < 20 && row != 0 && col != 0)
-                        map[row, col] = 1;
+                    if (n < 40 && row != 0 && col != 0)
+                        map[row, col].isPit = true;
                 }
             }
             pitRow = r.Next(4);
@@ -94,7 +110,7 @@ namespace WumpusG
                 pitRow = r.Next(4);
                 pitCol = r.Next(4);
             }
-            map[pitRow, pitCol] = 2;
+            map[pitRow, pitCol].isWumpus = true;
             pitRow = r.Next(4);
             pitCol = r.Next(4);
             while (pitRow == 3 && pitCol == 0)
@@ -102,84 +118,111 @@ namespace WumpusG
                 pitRow = r.Next(4);
                 pitCol = r.Next(4);
             }
-            map[pitRow, pitCol] = 3;
+            map[pitRow, pitCol].isGold = true;
             //drawCell(pitRow, pitCol, "/WumpusG;component/resources/gold_trophy_trophy_prize_winner_gold_cup.png");
         }
 
-        public int checkMove(int[,] mapL, int newRow, int newCol)
+        public int checkShoot(cell[,] mapL, int newRow, int newCol)
+        {
+            if (newRow < 0 || newRow > 3 || newCol < 0 || newCol > 3)
+            {
+                richTextBox1.AppendText("Arrow hit the wall\n");
+                richTextBox1.ScrollToEnd();
+                return 0;
+            }
+            else if (mapL[newRow, newCol].isWumpus)
+            {
+                richTextBox1.AppendText("You kill the Wumpus\n");
+                richTextBox1.ScrollToEnd();
+                drawCell(newRow, newCol, "/WumpusG;component/resources/monster_green.png");
+                field[newRow, newCol].isWumpus = false;
+                return 0;
+            }
+            return 1;
+        }
+
+        public int checkMove(cell[,] mapL, int newRow, int newCol)
         {
             if (newRow < 0 || newRow > 3 || newCol < 0 || newCol > 3)
             {
                 richTextBox1.AppendText("You hit the wall\n");
+                richTextBox1.ScrollToEnd();
                 return 0;
             }
-            else if (mapL[newRow, newCol] == 1)
+            else if (mapL[newRow, newCol].isPit)
             {
                 richTextBox1.AppendText("You fall into a pit\n");
+                richTextBox1.ScrollToEnd();
                 drawCell(newRow, newCol, "/WumpusG;component/resources/blackhole.png");
                 return 2;
             }
-            else if (mapL[newRow, newCol] == 2)
+            else if (mapL[newRow, newCol].isWumpus)
             {
                 richTextBox1.AppendText("You've eaten by the Wumpus\n");
+                richTextBox1.ScrollToEnd();
                 drawCell(newRow, newCol, "/WumpusG;component/resources/monster_green.png");
                 return 2;
             }
-            else if (mapL[newRow, newCol] == 3)
+            else if (mapL[newRow, newCol].isGold)
             {
                 richTextBox1.AppendText("You found the Gold! \n");
+                richTextBox1.ScrollToEnd();
                 drawCell(newRow, newCol, "/WumpusG;component/resources/gold_trophy_trophy_prize_winner_gold_cup.png");
-                field[newRow, newCol] = 0;
+                field[newRow, newCol].isGold = false;
+                label2.Content = score += 1000;
                 return 3;
             }
-            if ((newCol > 0 && mapL[newRow, newCol - 1] == 1) ||
-                (newCol < 3 && mapL[newRow, newCol + 1] == 1) ||
-                (newRow > 0 && mapL[newRow - 1, newCol] == 1) ||
-                (newRow < 3 && mapL[newRow + 1, newCol] == 1))
+            if ((newCol > 0 && mapL[newRow, newCol - 1].isPit) ||
+                (newCol < 3 && mapL[newRow, newCol + 1].isPit) ||
+                (newRow > 0 && mapL[newRow - 1, newCol].isPit) ||
+                (newRow < 3 && mapL[newRow + 1, newCol].isPit))
             {
                 richTextBox1.AppendText("You fell a breeze\n");
-                if (newCol > 0 && field[newRow, newCol - 1] != 4)
+                richTextBox1.ScrollToEnd();
+                if (newCol > 0 && !field[newRow, newCol - 1].isSafe)
                     drawCell(newRow, newCol - 1, "/WumpusG;component/resources/folder_ele_wind_weather.png");
-                if (newCol < 3 && field[newRow, newCol + 1] != 4)
+                if (newCol < 3 && !field[newRow, newCol + 1].isSafe)
                     drawCell(newRow, newCol + 1, "/WumpusG;component/resources/folder_ele_wind_weather.png");
-                if (newRow > 0 && field[newRow - 1, newCol] != 4)
+                if (newRow > 0 && !field[newRow - 1, newCol].isSafe)
                     drawCell(newRow - 1, newCol, "/WumpusG;component/resources/folder_ele_wind_weather.png");
-                if (newRow < 3 && field[newRow + 1, newCol] != 4)
+                if (newRow < 3 && !field[newRow + 1, newCol].isSafe)
                     drawCell(newRow + 1, newCol, "/WumpusG;component/resources/folder_ele_wind_weather.png");
             }
-            if ((newCol > 0 && mapL[newRow, newCol - 1] == 3) ||
-                (newCol < 3 && mapL[newRow, newCol + 1] == 3) ||
-                (newRow > 0 && mapL[newRow - 1, newCol] == 3) ||
-                (newRow < 3 && mapL[newRow + 1, newCol] == 3))
+            if ((newCol > 0 && mapL[newRow, newCol - 1].isGold) ||
+                (newCol < 3 && mapL[newRow, newCol + 1].isGold) ||
+                (newRow > 0 && mapL[newRow - 1, newCol].isGold) ||
+                (newRow < 3 && mapL[newRow + 1, newCol].isGold))
             {
                 richTextBox1.AppendText("You see shining\n");
+                richTextBox1.ScrollToEnd();
             }
 
-            if ((newCol > 0 && mapL[newRow, newCol - 1] == 2) ||
-               (newCol < 3 && mapL[newRow, newCol + 1] == 2) ||
-               (newRow > 0 && mapL[newRow - 1, newCol] == 2) ||
-               (newRow < 3 && mapL[newRow + 1, newCol] == 2))
+            if ((newCol > 0 && mapL[newRow, newCol - 1].isWumpus) ||
+               (newCol < 3 && mapL[newRow, newCol + 1].isWumpus) ||
+               (newRow > 0 && mapL[newRow - 1, newCol].isWumpus) ||
+               (newRow < 3 && mapL[newRow + 1, newCol].isWumpus))
             {
                 richTextBox1.AppendText("You smell Wumpus\n");
-                if (newCol > 0 && field[newRow, newCol - 1] != 4 && 
-                    map[newRow, newCol - 1].Source.Equals("/WumpusG;component/resources/folder_ele_wind_weather.png"))
+                richTextBox1.ScrollToEnd();
+                if (newCol > 0 && !field[newRow, newCol - 1].isSafe &&
+                    field[newRow, newCol - 1].isPit)
                     drawCell(newRow, newCol - 1, "/WumpusG;component/resources/bad_smelly_and_wind.png");
-                else if (newCol > 0 && field[newRow, newCol - 1] != 4)
+                else if (newCol > 0 && !field[newRow, newCol - 1].isSafe)
                     drawCell(newRow, newCol - 1, "/WumpusG;component/resources/bad_smelly.png");
-                if (newCol < 3 && field[newRow, newCol + 1] != 4 &&
-                    map[newRow, newCol + 1].Source.Equals("/WumpusG;component/resources/folder_ele_wind_weather.png"))
+                if (newCol < 3 && !field[newRow, newCol + 1].isSafe &&
+                    field[newRow, newCol + 1].isPit)
                     drawCell(newRow, newCol + 1, "/WumpusG;component/resources/bad_smelly_and_wind.png");
-                else if (newCol < 3 && field[newRow, newCol + 1] != 4)
+                else if (newCol < 3 && !field[newRow, newCol + 1].isSafe)
                     drawCell(newRow, newCol + 1, "/WumpusG;component/resources/bad_smelly.png");
-                if (newRow > 0 && field[newRow - 1, newCol] != 4 &&
-                    map[newRow - 1, newCol].Source.Equals("/WumpusG;component/resources/folder_ele_wind_weather.png"))
+                if (newRow > 0 && !field[newRow - 1, newCol].isSafe &&
+                    field[newRow - 1, newCol].isPit)
                     drawCell(newRow - 1, newCol, "/WumpusG;component/resources/bad_smelly_and_wind.png");
-                else if (newRow > 0 && field[newRow - 1, newCol] != 4)
+                else if (newRow > 0 && !field[newRow - 1, newCol].isSafe)
                     drawCell(newRow - 1, newCol, "/WumpusG;component/resources/bad_smelly.png");
-                if (newRow < 3 && field[newRow + 1, newCol] != 4 &&
-                    map[newRow + 1, newCol].Source.Equals("/WumpusG;component/resources/folder_ele_wind_weather.png"))
+                if (newRow < 3 && !field[newRow + 1, newCol].isSafe &&
+                    field[newRow + 1, newCol].isPit)
                     drawCell(newRow + 1, newCol, "/WumpusG;component/resources/bad_smelly_and_wind.png");
-                else if (newRow < 3 && field[newRow + 1, newCol] != 4)
+                else if (newRow < 3 && !field[newRow + 1, newCol].isSafe)
                     drawCell(newRow + 1, newCol, "/WumpusG;component/resources/bad_smelly.png");
             }
             return 1;
@@ -219,62 +262,154 @@ namespace WumpusG
 
         private void button1_Click(object sender, RoutedEventArgs e)
         {
-            richTextBox1.AppendText("You step Up\n");
-            int state = 0;
-            state = checkMove(field, playerRow - 1, playerCol);
-            if (state > 0)
+            if (direction != 1)
             {
-                playerRow -= 1;
+                direction = 1;
+                richTextBox1.AppendText("You look Up\n");
+                richTextBox1.ScrollToEnd();
+                label2.Content = --score;
             }
-            if(state !=2)
-                drawCell(playerRow, playerCol, "/WumpusG;component/resources/avatar_hero_superhero_loki_avengers.png");
-            field[playerRow + 1, playerCol] = 4;
-            drawCell(playerRow + 1, playerCol, "/WumpusG;component/resources/field.png"); 
+            else
+            {
+                richTextBox1.AppendText("You step Up\n");
+                richTextBox1.ScrollToEnd();
+                int state = 0;
+                state = checkMove(field, playerRow - 1, playerCol);
+                if (state > 0)
+                {
+                    playerRow -= 1;
+                }
+                if (state != 2)
+                    drawCell(playerRow, playerCol, "/WumpusG;component/resources/avatar_hero_superhero_loki_avengers.png");
+                field[playerRow + 1, playerCol].isSafe = true;
+                field[playerRow + 1, playerCol].isFog = false;
+                drawCell(playerRow + 1, playerCol, "/WumpusG;component/resources/field.png");
+                label2.Content = --score;
+            }
         }
 
         private void button2_Click(object sender, RoutedEventArgs e)
         {
-            richTextBox1.AppendText("You step Down\n");
-            int state = 0;
-            state = checkMove(field, playerRow + 1, playerCol);
-            if (state > 0)
+            if (direction != 2)
             {
-                playerRow += 1;
+                direction = 2;
+                richTextBox1.AppendText("You look Down\n");
+                richTextBox1.ScrollToEnd();
+                label2.Content = --score;
             }
-            if (state != 2)
-                drawCell(playerRow, playerCol, "/WumpusG;component/resources/avatar_hero_superhero_loki_avengers.png");
-            field[playerRow - 1, playerCol] = 4;
-            drawCell(playerRow - 1, playerCol, "/WumpusG;component/resources/field.png"); 
+            else
+            {
+                direction = 2;
+                richTextBox1.AppendText("You step Down\n");
+                richTextBox1.ScrollToEnd();
+                int state = 0;
+                state = checkMove(field, playerRow + 1, playerCol);
+                if (state > 0)
+                {
+                    playerRow += 1;
+                }
+                if (state != 2)
+                    drawCell(playerRow, playerCol, "/WumpusG;component/resources/avatar_hero_superhero_loki_avengers.png");
+                field[playerRow - 1, playerCol].isSafe = true;
+                field[playerRow - 1, playerCol].isFog = false;
+                drawCell(playerRow - 1, playerCol, "/WumpusG;component/resources/field.png");
+                label2.Content = --score;
+            }
         }
 
         private void button4_Click(object sender, RoutedEventArgs e)
         {
-            richTextBox1.AppendText("You step Right\n");
-            int state = 0;
-            state = checkMove(field, playerRow, playerCol + 1);
-            if (state > 0)
+            if (direction != 4)
             {
-                playerCol += 1;
+                direction = 4;
+                richTextBox1.AppendText("You loor Right\n");
+                richTextBox1.ScrollToEnd();
+                label2.Content = --score;
             }
-            if (state != 2)
-                drawCell(playerRow, playerCol, "/WumpusG;component/resources/avatar_hero_superhero_loki_avengers.png");
-            field[playerRow, playerCol - 1] = 4;
-            drawCell(playerRow, playerCol - 1, "/WumpusG;component/resources/field.png"); 
+            else
+            {
+                direction = 4;
+                richTextBox1.AppendText("You step Right\n");
+                richTextBox1.ScrollToEnd();
+                int state = 0;
+                state = checkMove(field, playerRow, playerCol + 1);
+                if (state > 0)
+                {
+                    playerCol += 1;
+                }
+                if (state != 2)
+                    drawCell(playerRow, playerCol, "/WumpusG;component/resources/avatar_hero_superhero_loki_avengers.png");
+                field[playerRow, playerCol - 1].isSafe = true;
+                field[playerRow, playerCol - 1].isFog = false;
+                drawCell(playerRow, playerCol - 1, "/WumpusG;component/resources/field.png");
+                label2.Content = --score;
+            }
         }
 
         private void button3_Click(object sender, RoutedEventArgs e)
         {
-            richTextBox1.AppendText("You step Right\n");
-            int state = 0;
-            state = checkMove(field, playerRow, playerCol - 1);
-            if (state > 0)
+            if (direction != 3)
             {
-                playerCol -= 1;
+                direction = 3;
+                richTextBox1.AppendText("You look Left\n");
+                richTextBox1.ScrollToEnd();
+                label2.Content = --score;
             }
-            if (state != 2)
-                drawCell(playerRow, playerCol, "/WumpusG;component/resources/avatar_hero_superhero_loki_avengers.png");
-            field[playerRow, playerCol + 1] = 4;
-            drawCell(playerRow, playerCol + 1, "/WumpusG;component/resources/field.png"); 
+            else
+            {
+                direction = 3;
+                richTextBox1.AppendText("You step Right\n");
+                richTextBox1.ScrollToEnd();
+                int state = 0;
+                state = checkMove(field, playerRow, playerCol - 1);
+                if (state > 0)
+                {
+                    playerCol -= 1;
+                }
+                if (state != 2)
+                    drawCell(playerRow, playerCol, "/WumpusG;component/resources/avatar_hero_superhero_loki_avengers.png");
+                field[playerRow, playerCol + 1].isSafe = true;
+                field[playerRow, playerCol + 1].isFog = false;
+                drawCell(playerRow, playerCol + 1, "/WumpusG;component/resources/field.png");
+                label2.Content = --score;
+            }
+        }
+
+        private void button6_Click(object sender, RoutedEventArgs e)
+        {
+            int state = -1;
+            switch (direction)
+            {
+                case 1:
+                    do
+                    {
+                        state = checkShoot(field, playerRow - 1, playerCol);
+                    }
+                    while (state != 0);
+                    break;
+                case 2:
+                    do
+                    {
+                        state = checkShoot(field, playerRow + 1, playerCol);
+                    }
+                    while (state != 0) ;
+                    break;
+                case 3:
+                    do
+                    {
+                        state = checkShoot(field, playerRow, playerCol - 1);
+                    }
+                    while (state != 0) ;
+                    break;
+                case 4:
+                    do
+                    {
+                        state = checkShoot(field, playerRow, playerCol + 1);
+                    }
+                    while (state != 0) ;
+                    break;
+            }
+            label2.Content = score-=10;
         }
     }
 }

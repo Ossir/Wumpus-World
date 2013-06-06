@@ -10,5 +10,8 @@
         <Canvas Height="378" HorizontalAlignment="Left" Name="canvas1" VerticalAlignment="Top" Width="378" Margin="12,12,0,0"></Canvas>
         <Button Content="Start" Height="23" HorizontalAlignment="Left" Margin="481,169,0,0" Name="button5" VerticalAlignment="Top" Width="75" Click="button5_Click" />
         <RichTextBox Height="192" HorizontalAlignment="Left" Margin="403,198,0,0" Name="richTextBox1" VerticalAlignment="Top" Width="230" FontSize="12" MinWidth="10" />
+        <Button Content="Shoot" Height="23" HorizontalAlignment="Left" Margin="481,85,0,0" Name="button6" VerticalAlignment="Top" Width="75" Click="button6_Click" />
+        <Label Content="Score" Height="28" HorizontalAlignment="Left" Margin="418,19,0,0" Name="label1" VerticalAlignment="Top" />
+        <Label Height="28" HorizontalAlignment="Right" Margin="0,19,134,0" Name="label2" VerticalAlignment="Top" Width="58" />
     </Grid>
 </Window>
