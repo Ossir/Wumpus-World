@@ -30,10 +30,13 @@ namespace WumpusG
             public bool isFog;
         }
 
+        public int ArrowCnt = 1;
         public int score = 100;
         public Image[,] map = new Image[4, 4];
         public cell[,] field = new cell[4, 4];
         public int playerRow = 3, playerCol = 0;
+
+        public Agent agent = new Agent();
 
         public MainWindow()
         {
@@ -74,7 +77,7 @@ namespace WumpusG
 
         public void CreateMap(cell[,] map)
         {
-            Random r = new Random();
+            Random r = new Random(DateTime.Now.Millisecond);
             for (int row = 0; row < 4; row++)
             {
                 for (int col = 0; col < 4; col++)
@@ -87,9 +90,14 @@ namespace WumpusG
             {
                 for (int col = 0; col < 4; col++)
                 {
-                    int n = new Random().Next(1, 100);
-                    if (n < 40 && row != 0 && col != 0)
-                        map[row, col].isPit = true;
+                    int n = r.Next(1, 100);
+                    if (n < 30)
+                        if (row != 0 && col != 0)
+                        {
+                            map[row, col].isPit = true;
+                            if(checkBox1.IsChecked == true)
+                                drawCell(row, col, "/WumpusG;component/resources/blackhole.png");
+                        }
                 }
             }
             pitRow = r.Next(4);
@@ -99,6 +107,8 @@ namespace WumpusG
                 pitRow = r.Next(4);
                 pitCol = r.Next(4);
             }
+            if (checkBox1.IsChecked == true)
+                drawCell(pitRow, pitCol, "/WumpusG;component/resources/monster_green.png");
             map[pitRow, pitCol].isWumpus = true;
             pitRow = r.Next(4);
             pitCol = r.Next(4);
@@ -108,7 +118,8 @@ namespace WumpusG
                 pitCol = r.Next(4);
             }
             map[pitRow, pitCol].isGold = true;
-            //drawCell(pitRow, pitCol, "/WumpusG;component/resources/gold_trophy_trophy_prize_winner_gold_cup.png");
+            if (checkBox1.IsChecked == true)
+                drawCell(pitRow, pitCol, "/WumpusG;component/resources/gold_trophy_trophy_prize_winner_gold_cup.png");
         }
 
         public int checkShoot(cell[,] mapL, int newRow, int newCol)
@@ -143,6 +154,7 @@ namespace WumpusG
                 richTextBox1.AppendText("You fall into a pit\n");
                 richTextBox1.ScrollToEnd();
                 drawCell(newRow, newCol, "/WumpusG;component/resources/blackhole.png");
+                score -= 1000;
                 return 2;
             }
             else if (mapL[newRow, newCol].isWumpus)
@@ -150,6 +162,7 @@ namespace WumpusG
                 richTextBox1.AppendText("You've eaten by the Wumpus\n");
                 richTextBox1.ScrollToEnd();
                 drawCell(newRow, newCol, "/WumpusG;component/resources/monster_green.png");
+                score -= 1000;
                 return 2;
             }
             else if (mapL[newRow, newCol].isGold)
@@ -159,7 +172,7 @@ namespace WumpusG
                 drawCell(newRow, newCol, "/WumpusG;component/resources/gold_trophy_trophy_prize_winner_gold_cup.png");
                 field[newRow, newCol].isGold = false;
                 label2.Content = score += 1000;
-                return 3;
+                //return 3;
             }
             if ((newCol > 0 && mapL[newRow, newCol - 1].isPit) ||
                 (newCol < 3 && mapL[newRow, newCol + 1].isPit) ||
@@ -251,154 +264,453 @@ namespace WumpusG
 
         private void button1_Click(object sender, RoutedEventArgs e)
         {
-            if (direction != 1)
+            if (score > 1)
             {
-                direction = 1;
-                richTextBox1.AppendText("You look Up\n");
-                richTextBox1.ScrollToEnd();
-                label2.Content = --score;
-            }
-            else
-            {
-                richTextBox1.AppendText("You step Up\n");
-                richTextBox1.ScrollToEnd();
-                int state = 0;
-                state = checkMove(field, playerRow - 1, playerCol);
-                if (state > 0)
+                if (direction != 1)
                 {
-                    playerRow -= 1;
+                    direction = 1;
+                    richTextBox1.AppendText("You look Up\n");
+                    richTextBox1.ScrollToEnd();
+                    label2.Content = --score;
                 }
-                if (state != 2)
-                    drawCell(playerRow, playerCol, "/WumpusG;component/resources/avatar_hero_superhero_loki_avengers.png");
-                field[playerRow + 1, playerCol].isSafe = true;
-                field[playerRow + 1, playerCol].isFog = false;
-                drawCell(playerRow + 1, playerCol, "/WumpusG;component/resources/field.png");
-                label2.Content = --score;
+                else
+                {
+                    richTextBox1.AppendText("You step Up\n");
+                    richTextBox1.ScrollToEnd();
+                    int state = 0;
+                    state = checkMove(field, playerRow - 1, playerCol);
+                    if (state > 0)
+                    {
+                        playerRow -= 1;
+                    }
+                    if (state != 2)
+                        drawCell(playerRow, playerCol, "/WumpusG;component/resources/avatar_hero_superhero_loki_avengers.png");
+                    field[playerRow + 1, playerCol].isSafe = true;
+                    field[playerRow + 1, playerCol].isFog = false;
+                    drawCell(playerRow + 1, playerCol, "/WumpusG;component/resources/field.png");
+                    label2.Content = --score;
+                }
             }
         }
 
         private void button2_Click(object sender, RoutedEventArgs e)
         {
-            if (direction != 2)
+            if (score > 1)
             {
-                direction = 2;
-                richTextBox1.AppendText("You look Down\n");
-                richTextBox1.ScrollToEnd();
-                label2.Content = --score;
-            }
-            else
-            {
-                direction = 2;
-                richTextBox1.AppendText("You step Down\n");
-                richTextBox1.ScrollToEnd();
-                int state = 0;
-                state = checkMove(field, playerRow + 1, playerCol);
-                if (state > 0)
+                if (direction != 2)
                 {
-                    playerRow += 1;
+                    direction = 2;
+                    richTextBox1.AppendText("You look Down\n");
+                    richTextBox1.ScrollToEnd();
+                    label2.Content = --score;
                 }
-                if (state != 2)
-                    drawCell(playerRow, playerCol, "/WumpusG;component/resources/avatar_hero_superhero_loki_avengers.png");
-                field[playerRow - 1, playerCol].isSafe = true;
-                field[playerRow - 1, playerCol].isFog = false;
-                drawCell(playerRow - 1, playerCol, "/WumpusG;component/resources/field.png");
-                label2.Content = --score;
+                else
+                {
+                    direction = 2;
+                    richTextBox1.AppendText("You step Down\n");
+                    richTextBox1.ScrollToEnd();
+                    int state = 0;
+                    state = checkMove(field, playerRow + 1, playerCol);
+                    if (state > 0)
+                    {
+                        playerRow += 1;
+                    }
+                    if (state != 2)
+                        drawCell(playerRow, playerCol, "/WumpusG;component/resources/avatar_hero_superhero_loki_avengers.png");
+                    field[playerRow - 1, playerCol].isSafe = true;
+                    field[playerRow - 1, playerCol].isFog = false;
+                    drawCell(playerRow - 1, playerCol, "/WumpusG;component/resources/field.png");
+                    label2.Content = --score;
+                }
             }
         }
 
         private void button4_Click(object sender, RoutedEventArgs e)
         {
-            if (direction != 4)
+            if (score > 1)
             {
-                direction = 4;
-                richTextBox1.AppendText("You loor Right\n");
-                richTextBox1.ScrollToEnd();
-                label2.Content = --score;
-            }
-            else
-            {
-                direction = 4;
-                richTextBox1.AppendText("You step Right\n");
-                richTextBox1.ScrollToEnd();
-                int state = 0;
-                state = checkMove(field, playerRow, playerCol + 1);
-                if (state > 0)
+                if (direction != 4)
                 {
-                    playerCol += 1;
+                    direction = 4;
+                    richTextBox1.AppendText("You loor Right\n");
+                    richTextBox1.ScrollToEnd();
+                    label2.Content = --score;
                 }
-                if (state != 2)
-                    drawCell(playerRow, playerCol, "/WumpusG;component/resources/avatar_hero_superhero_loki_avengers.png");
-                field[playerRow, playerCol - 1].isSafe = true;
-                field[playerRow, playerCol - 1].isFog = false;
-                drawCell(playerRow, playerCol - 1, "/WumpusG;component/resources/field.png");
-                label2.Content = --score;
+                else
+                {
+                    direction = 4;
+                    richTextBox1.AppendText("You step Right\n");
+                    richTextBox1.ScrollToEnd();
+                    int state = 0;
+                    state = checkMove(field, playerRow, playerCol + 1);
+                    if (state > 0)
+                    {
+                        playerCol += 1;
+                    }
+                    if (state != 2)
+                        drawCell(playerRow, playerCol, "/WumpusG;component/resources/avatar_hero_superhero_loki_avengers.png");
+                    field[playerRow, playerCol - 1].isSafe = true;
+                    field[playerRow, playerCol - 1].isFog = false;
+                    drawCell(playerRow, playerCol - 1, "/WumpusG;component/resources/field.png");
+                    label2.Content = --score;
+                }
             }
         }
 
         private void button3_Click(object sender, RoutedEventArgs e)
         {
-            if (direction != 3)
+            if (score > 1)
             {
-                direction = 3;
-                richTextBox1.AppendText("You look Left\n");
-                richTextBox1.ScrollToEnd();
-                label2.Content = --score;
-            }
-            else
-            {
-                direction = 3;
-                richTextBox1.AppendText("You step Right\n");
-                richTextBox1.ScrollToEnd();
-                int state = 0;
-                state = checkMove(field, playerRow, playerCol - 1);
-                if (state > 0)
+                if (direction != 3)
                 {
-                    playerCol -= 1;
+                    direction = 3;
+                    richTextBox1.AppendText("You look Left\n");
+                    richTextBox1.ScrollToEnd();
+                    label2.Content = --score;
                 }
-                if (state != 2)
-                    drawCell(playerRow, playerCol, "/WumpusG;component/resources/avatar_hero_superhero_loki_avengers.png");
-                field[playerRow, playerCol + 1].isSafe = true;
-                field[playerRow, playerCol + 1].isFog = false;
-                drawCell(playerRow, playerCol + 1, "/WumpusG;component/resources/field.png");
-                label2.Content = --score;
+                else
+                {
+                    direction = 3;
+                    richTextBox1.AppendText("You step Right\n");
+                    richTextBox1.ScrollToEnd();
+                    int state = 0;
+                    state = checkMove(field, playerRow, playerCol - 1);
+                    if (state > 0)
+                    {
+                        playerCol -= 1;
+                    }
+                    if (state != 2)
+                        drawCell(playerRow, playerCol, "/WumpusG;component/resources/avatar_hero_superhero_loki_avengers.png");
+                    field[playerRow, playerCol + 1].isSafe = true;
+                    field[playerRow, playerCol + 1].isFog = false;
+                    drawCell(playerRow, playerCol + 1, "/WumpusG;component/resources/field.png");
+                    label2.Content = --score;
+                }
             }
         }
 
         private void button6_Click(object sender, RoutedEventArgs e)
         {
-            int state = -1;
-            switch (direction)
+            if (score > 10)
             {
-                case 1:
+                int state = -1;
+                int arrowRow = playerRow;
+                int arrowCol = playerCol;
+                switch (direction)
+                {
+                    case 1:
+                        do
+                        {
+                            state = checkShoot(field, arrowRow - 1, playerCol);
+                            arrowRow--;
+                        }
+                        while (state != 0);
+                        break;
+                    case 2:
+                        do
+                        {
+                            state = checkShoot(field, arrowRow + 1, playerCol);
+                            arrowRow++;
+                        }
+                        while (state != 0);
+                        break;
+                    case 3:
+                        do
+                        {
+                            state = checkShoot(field, playerRow, arrowCol - 1);
+                            arrowCol--;
+                        }
+                        while (state != 0);
+                        break;
+                    case 4:
+                        do
+                        {
+                            state = checkShoot(field, playerRow, arrowCol + 1);
+                            arrowCol++;
+                        }
+                        while (state != 0);
+                        break;
+                }
+                label2.Content = score -= 10;
+            }
+        }
+
+        private void button7_Click(object sender, RoutedEventArgs e)
+        {
+            int direction;
+            direction = agent.Analys(field, agent.PositionRow, agent.PositionCol);
+            if (direction == 1)
+            {
+                richTextBox1.AppendText("You step Up\n");
+                richTextBox1.ScrollToEnd();
+                //int state = 0;
+                //state = checkMove(field, playerRow - 1, playerCol);
+                //if (state > 0)
+                //{
+                playerRow -= 1;
+                agent.PositionRow--;
+                checkMove(field, playerRow, playerCol);
+                //}
+                //if (state != 2)
+                drawCell(playerRow, playerCol, "/WumpusG;component/resources/avatar_hero_superhero_loki_avengers.png");
+                field[playerRow + 1, playerCol].isSafe = true;
+                field[playerRow + 1, playerCol].isFog = false;
+                drawCell(playerRow + 1, playerCol, "/WumpusG;component/resources/field.png");
+                label2.Content = --score;
+                if (playerRow < 3 && agent.field[playerRow + 1, playerCol].isWumpus >= 2 && ArrowCnt == 1)
+                {
+                    int state = 1;
+                    int arrowRow = playerRow;
                     do
                     {
-                        state = checkShoot(field, playerRow - 1, playerCol);
+                        state = checkShoot(field, arrowRow + 1, playerCol);
+                        arrowRow--;
                     }
                     while (state != 0);
-                    break;
-                case 2:
+                    ArrowCnt--;
+                }
+                else
+                    if (playerRow > 0 && agent.field[playerRow - 1, playerCol].isWumpus >= 2 && ArrowCnt == 1)
+                    {
+                        int state = 1;
+                        int arrowRow = playerRow;
+                        do
+                        {
+                            state = checkShoot(field, arrowRow - 1, playerCol);
+                            arrowRow++;
+                        }
+                        while (state != 0);
+                        ArrowCnt--;
+                    } else
+                if (playerCol > 0 && agent.field[playerRow, playerCol - 1].isWumpus >= 2 && ArrowCnt == 1)
+                {
+                    int state = 1;
+                    int arrowcol = playerCol;
                     do
                     {
-                        state = checkShoot(field, playerRow + 1, playerCol);
+                        state = checkShoot(field, playerRow, arrowcol - 1);
+                        arrowcol--;
                     }
-                    while (state != 0) ;
-                    break;
-                case 3:
+                    while (state != 0);
+                    ArrowCnt--;
+                } else
+                if (playerCol < 3 && agent.field[playerRow, playerCol + 1].isWumpus >= 2 && ArrowCnt == 1)
+                {
+                    int state = 1;
+                    int arrowcol = playerCol;
                     do
                     {
-                        state = checkShoot(field, playerRow, playerCol - 1);
+                        state = checkShoot(field, playerRow, arrowcol + 1);
+                        arrowcol++;
                     }
-                    while (state != 0) ;
-                    break;
-                case 4:
-                    do
-                    {
-                        state = checkShoot(field, playerRow, playerCol + 1);
-                    }
-                    while (state != 0) ;
-                    break;
+                    while (state != 0);
+                    ArrowCnt--;
+                }
             }
-            label2.Content = score-=10;
+            if (direction == 2)
+            {
+                richTextBox1.AppendText("You step Down\n");
+                richTextBox1.ScrollToEnd();
+                //int state = 0;
+                //state = checkMove(field, playerRow - 1, playerCol);
+                //if (state > 0)
+                //{
+                playerRow += 1;
+                agent.PositionRow++;
+                checkMove(field, playerRow, playerCol);
+                //}
+                //if (state != 2)
+                drawCell(playerRow, playerCol, "/WumpusG;component/resources/avatar_hero_superhero_loki_avengers.png");
+                field[playerRow - 1, playerCol].isSafe = true;
+                field[playerRow - 1, playerCol].isFog = false;
+                drawCell(playerRow - 1, playerCol, "/WumpusG;component/resources/field.png");
+                label2.Content = --score;
+                if (playerRow < 3 && agent.field[playerRow + 1, playerCol].isWumpus >= 2 && ArrowCnt == 1)
+                {
+                    int state = 1;
+                    int arrowRow = playerRow;
+                    do
+                    {
+                        state = checkShoot(field, arrowRow + 1, playerCol);
+                        arrowRow--;
+                    }
+                    while (state != 0);
+                    ArrowCnt--;
+                }
+                else
+                    if (playerRow > 0 && agent.field[playerRow - 1, playerCol].isWumpus >= 2 && ArrowCnt == 1)
+                    {
+                        int state = 1;
+                        int arrowRow = playerRow;
+                        do
+                        {
+                            state = checkShoot(field, arrowRow - 1, playerCol);
+                            arrowRow++;
+                        }
+                        while (state != 0);
+                        ArrowCnt--;
+                    } else
+                if (playerCol > 0 && agent.field[playerRow, playerCol - 1].isWumpus >= 2 && ArrowCnt == 1)
+                {
+                    int state = 1;
+                    int arrowcol = playerCol;
+                    do
+                    {
+                        state = checkShoot(field, playerRow, arrowcol - 1);
+                        arrowcol--;
+                    }
+                    while (state != 0);
+                    ArrowCnt--;
+                } else
+                if (playerCol < 3 && agent.field[playerRow, playerCol + 1].isWumpus >= 2 && ArrowCnt == 1)
+                {
+                    int state = 1;
+                    int arrowcol = playerCol;
+                    do
+                    {
+                        state = checkShoot(field, playerRow, arrowcol + 1);
+                        arrowcol++;
+                    }
+                    while (state != 0);
+                    ArrowCnt--;
+                }
+            }
+            if (direction == 3)
+            {
+                richTextBox1.AppendText("You step Left\n");
+                richTextBox1.ScrollToEnd();
+                //int state = 0;
+                //state = checkMove(field, playerRow - 1, playerCol);
+                //if (state > 0)
+                //{
+                playerCol -= 1;
+                agent.PositionCol--;
+                checkMove(field, playerRow, playerCol);
+                //}
+                //if (state != 2)
+                drawCell(playerRow, playerCol, "/WumpusG;component/resources/avatar_hero_superhero_loki_avengers.png");
+                field[playerRow, playerCol + 1].isSafe = true;
+                field[playerRow, playerCol + 1].isFog = false;
+                drawCell(playerRow, playerCol + 1, "/WumpusG;component/resources/field.png");
+                label2.Content = --score;
+                if (playerRow < 3 && agent.field[playerRow + 1, playerCol].isWumpus >= 2 && ArrowCnt == 1)
+                {
+                    int state = 1;
+                    int arrowRow = playerRow;
+                    do
+                    {
+                        state = checkShoot(field, arrowRow + 1, playerCol);
+                        arrowRow--;
+                    }
+                    while (state != 0);
+                    ArrowCnt--;
+                }
+                else
+                    if (playerRow > 0 && agent.field[playerRow - 1, playerCol].isWumpus >= 2 && ArrowCnt == 1)
+                    {
+                        int state = 1;
+                        int arrowRow = playerRow;
+                        do
+                        {
+                            state = checkShoot(field, arrowRow - 1, playerCol);
+                            arrowRow++;
+                        }
+                        while (state != 0);
+                        ArrowCnt--;
+                    } else
+                if (playerCol > 0 && agent.field[playerRow, playerCol - 1].isWumpus >= 2 && ArrowCnt == 1)
+                {
+                    int state = 1;
+                    int arrowcol = playerCol;
+                    do
+                    {
+                        state = checkShoot(field, playerRow, arrowcol - 1);
+                        arrowcol--;
+                    }
+                    while (state != 0);
+                    ArrowCnt--;
+                } else
+                if (playerCol < 3 && agent.field[playerRow, playerCol + 1].isWumpus >= 2 && ArrowCnt == 1)
+                {
+                    int state = 1;
+                    int arrowcol = playerCol;
+                    do
+                    {
+                        state = checkShoot(field, playerRow, arrowcol + 1);
+                        arrowcol++;
+                    }
+                    while (state != 0);
+                    ArrowCnt--;
+                }
+            }
+            if (direction == 4)
+            {
+                richTextBox1.AppendText("You step Right\n");
+                richTextBox1.ScrollToEnd();
+                //int state = 0;
+                //state = checkMove(field, playerRow - 1, playerCol);
+                //if (state > 0)
+                //{
+                playerCol += 1;
+                agent.PositionCol++;
+                checkMove(field, playerRow, playerCol);
+                //}
+                //if (state != 2)
+                drawCell(playerRow, playerCol, "/WumpusG;component/resources/avatar_hero_superhero_loki_avengers.png");
+                field[playerRow, playerCol - 1].isSafe = true;
+                field[playerRow, playerCol - 1].isFog = false;
+                drawCell(playerRow, playerCol - 1, "/WumpusG;component/resources/field.png");
+                label2.Content = --score;
+                if (playerRow < 3 && agent.field[playerRow + 1, playerCol].isWumpus >= 2 && ArrowCnt == 1)
+                {
+                    int state = 1;
+                    int arrowRow = playerRow;
+                    do
+                    {
+                        state = checkShoot(field, arrowRow + 1, playerCol);
+                        arrowRow--;
+                    }
+                    while (state != 0);
+                    ArrowCnt--;
+                }
+                else
+                    if (playerRow > 0 && agent.field[playerRow - 1, playerCol].isWumpus >= 2 && ArrowCnt == 1)
+                    {
+                        int state = 1;
+                        int arrowRow = playerRow;
+                        do
+                        {
+                            state = checkShoot(field, arrowRow - 1, playerCol);
+                            arrowRow++;
+                        }
+                        while (state != 0);
+                        ArrowCnt--;
+                    } else
+                if (playerCol > 0 && agent.field[playerRow, playerCol - 1].isWumpus >= 2 && ArrowCnt == 1)
+                {
+                    int state = 1;
+                    int arrowcol = playerCol;
+                    do
+                    {
+                        state = checkShoot(field, playerRow, arrowcol - 1);
+                        arrowcol--;
+                    }
+                    while (state != 0);
+                    ArrowCnt--;
+                } else
+                if (playerCol < 3 && agent.field[playerRow, playerCol + 1].isWumpus >= 2 && ArrowCnt == 1)
+                {
+                    int state = 1;
+                    int arrowcol = playerCol;
+                    do
+                    {
+                        state = checkShoot(field, playerRow, arrowcol + 1);
+                        arrowcol++;
+                    }
+                    while (state != 0);
+                    ArrowCnt--;
+                }
+            }
         }
     }
 }

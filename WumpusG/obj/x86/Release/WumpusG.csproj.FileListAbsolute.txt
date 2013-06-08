@@ -1,0 +1,11 @@
+D:\Wumpus-World\WumpusG\bin\Release\WumpusG.exe
+D:\Wumpus-World\WumpusG\bin\Release\WumpusG.pdb
+D:\Wumpus-World\WumpusG\obj\x86\Release\MainWindow.baml
+D:\Wumpus-World\WumpusG\obj\x86\Release\MainWindow.g.cs
+D:\Wumpus-World\WumpusG\obj\x86\Release\App.g.cs
+D:\Wumpus-World\WumpusG\obj\x86\Release\WumpusG_MarkupCompile.cache
+D:\Wumpus-World\WumpusG\obj\x86\Release\WumpusG.g.resources
+D:\Wumpus-World\WumpusG\obj\x86\Release\WumpusG.Properties.Resources.resources
+D:\Wumpus-World\WumpusG\obj\x86\Release\WumpusG.csproj.GenerateResource.Cache
+D:\Wumpus-World\WumpusG\obj\x86\Release\WumpusG.exe
+D:\Wumpus-World\WumpusG\obj\x86\Release\WumpusG.pdb

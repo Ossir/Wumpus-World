@@ -4,11 +4,11 @@
 winexe
 C#
 .cs
-D:\Wumpus-World\WumpusG\obj\x86\Debug\
+D:\Wumpus-World\WumpusG\obj\x86\Release\
 WumpusG
 none
 false
-DEBUG;TRACE
+TRACE
 D:\Wumpus-World\WumpusG\App.xaml
 11151548125
 

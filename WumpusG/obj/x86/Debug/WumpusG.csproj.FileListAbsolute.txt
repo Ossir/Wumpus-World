@@ -9,3 +9,14 @@ C:\Users\Пользователь\Documents\Visual Studio 2010\Projects\WumpusG\
 C:\Users\Пользователь\Documents\Visual Studio 2010\Projects\WumpusG\WumpusG\obj\x86\Debug\WumpusG.Properties.Resources.resources
 C:\Users\Пользователь\Documents\Visual Studio 2010\Projects\WumpusG\WumpusG\obj\x86\Debug\WumpusG.exe
 C:\Users\Пользователь\Documents\Visual Studio 2010\Projects\WumpusG\WumpusG\obj\x86\Debug\WumpusG.pdb
+D:\Wumpus-World\WumpusG\obj\x86\Debug\WumpusG.exe
+D:\Wumpus-World\WumpusG\obj\x86\Debug\WumpusG.pdb
+D:\Wumpus-World\WumpusG\bin\Debug\WumpusG.exe
+D:\Wumpus-World\WumpusG\bin\Debug\WumpusG.pdb
+D:\Wumpus-World\WumpusG\obj\x86\Debug\MainWindow.baml
+D:\Wumpus-World\WumpusG\obj\x86\Debug\MainWindow.g.cs
+D:\Wumpus-World\WumpusG\obj\x86\Debug\App.g.cs
+D:\Wumpus-World\WumpusG\obj\x86\Debug\WumpusG_MarkupCompile.cache
+D:\Wumpus-World\WumpusG\obj\x86\Debug\WumpusG.g.resources
+D:\Wumpus-World\WumpusG\obj\x86\Debug\WumpusG.Properties.Resources.resources
+D:\Wumpus-World\WumpusG\obj\x86\Debug\WumpusG.csproj.GenerateResource.Cache
